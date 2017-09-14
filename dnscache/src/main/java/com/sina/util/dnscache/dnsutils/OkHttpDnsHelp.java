@@ -24,6 +24,7 @@ import okhttp3.OkHttpClient;
 public class OkHttpDnsHelp {
 
     public static OkHttpClient.Builder initOkHttp(Context context, String channeId, long connectTimeout, long readTimeout) {
+        DNSCache.Init(context);
         return new OkHttpClient.Builder()
                 .dns(new Dns() {
                     private final Dns SYSTEM = Dns.SYSTEM;
@@ -50,6 +51,7 @@ public class OkHttpDnsHelp {
     }
 
     public static OkHttpClient.Builder initOkHttp(Context context, String channeId, long connectTimeout, long readTimeout, Dns dns) {
+        DNSCache.Init(context);
         return new OkHttpClient.Builder()
                 .dns(dns)
                 .addInterceptor(new ChannelIdInterceptor(context, channeId))
