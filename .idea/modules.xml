@@ -3,10 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HttpDns.iml" filepath="$PROJECT_DIR$/HttpDns.iml" />
-      <module fileurl="file://$PROJECT_DIR$/HttpDns.iml" filepath="$PROJECT_DIR$/HttpDns.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dnscache/dnscache.iml" filepath="$PROJECT_DIR$/dnscache/dnscache.iml" />
       <module fileurl="file://$PROJECT_DIR$/dnscache/dnscache.iml" filepath="$PROJECT_DIR$/dnscache/dnscache.iml" />
     </modules>
   </component>
