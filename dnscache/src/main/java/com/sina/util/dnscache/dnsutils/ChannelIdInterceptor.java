@@ -1,6 +1,7 @@
 package com.sina.util.dnscache.dnsutils;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -19,13 +20,11 @@ import okio.Buffer;
  * Created by ming.o on 2017/9/8.
  */
 
-public class ChannelIdInterceptor implements Interceptor {
-    private Context context; //This is here because I needed it for some other cause
+public class ChannelIdInterceptor implements Interceptor {private Context context; //This is here because I needed it for some other cause
 
     //private static final String TOKEN_IDENTIFIER = "token_id";
     private String id = "";
-
-    public ChannelIdInterceptor(Context context, String id) {
+    public ChannelIdInterceptor(Context context, @NonNull String id) {
         this.context = context;
         this.id = id;
     }
@@ -35,58 +34,59 @@ public class ChannelIdInterceptor implements Interceptor {
         Request request = chain.request();
         RequestBody requestBody = request.body();
         String channelId = id;//whatever or however you get it.
-        String subtype = requestBody.contentType().subtype();
-        Log.d("subtype", subtype);
-        if ("".equals(channelId)) {
-            if (subtype.contains("json")) {
-                requestBody = processApplicationJsonRequestBody(requestBody, channelId);
-            } else if (subtype.contains("form")) {
-                requestBody = processFormDataRequestBody(requestBody, channelId);
+        if(requestBody!=null &&requestBody.contentType() != null) {
+            String subtype = requestBody.contentType().subtype();
+            Log.d("subtype", subtype);
+            if (!"".equals(channelId)) {
+                if (subtype.contains("json")) {
+                    requestBody = processApplicationJsonRequestBody(requestBody, channelId);
+                } else if (subtype.contains("form")) {
+                    requestBody = processFormDataRequestBody(requestBody, channelId);
+                }
+                if (requestBody != null) {
+                    Request.Builder requestBuilder = request.newBuilder();
+                    request = requestBuilder
+                            .post(requestBody)
+                            .build();
+                }
             }
-            if (requestBody != null) {
-                Request.Builder requestBuilder = request.newBuilder();
-                request = requestBuilder
-                        .post(requestBody)
-                        .build();
-            }
+            Log.d("subtype",request.body().contentType().toString());
         }
-        Log.d("subtype", request.body().contentType().toString());
+//
         return chain.proceed(request);
     }
-
-    private String bodyToString(final RequestBody request) {
+    private String bodyToString(final RequestBody request){
         try {
             final RequestBody copy = request;
             final Buffer buffer = new Buffer();
-            if (copy != null)
+            if(copy != null)
                 copy.writeTo(buffer);
             else
                 return "";
             return buffer.readUtf8();
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             return "did not work";
         }
     }
-
-    private RequestBody processApplicationJsonRequestBody(RequestBody requestBody, String token) {
+    private RequestBody processApplicationJsonRequestBody(RequestBody requestBody,String token){
         String customReq = bodyToString(requestBody);
         try {
             JSONObject obj = new JSONObject(customReq);
-            obj.put("channelId ", token);
+            obj.put("channel_id", token);
             return RequestBody.create(requestBody.contentType(), obj.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
     }
-
-    private RequestBody processFormDataRequestBody(RequestBody requestBody, String token) {
+    private RequestBody processFormDataRequestBody(RequestBody requestBody, String token){
         RequestBody formBody = new FormBody.Builder()
-                .add("channelId ", token)
+                .add("channel_id", token)
                 .build();
         String postBodyString = bodyToString(requestBody);
-        postBodyString += ((postBodyString.length() > 0) ? "&" : "") + bodyToString(formBody);
-        Log.d("subtype", postBodyString);
+        postBodyString += ((postBodyString.length() > 0) ? "&" : "") +  bodyToString(formBody);
+        Log.d("subtype",postBodyString);
         return RequestBody.create(requestBody.contentType(), postBodyString);
     }
 
