@@ -22,17 +22,19 @@ public class HttpDNS implements Dns {
 
     @Override
     public List<InetAddress> lookup(String hostname) throws UnknownHostException {
-        Log.d("check", hostname);
-        DNSCache dnsCache = DNSCache.getInstance();
-        String ip = InetAddress.getByName(hostname).getHostAddress();
-        Log.d("check", ip);
-        DomainInfo[] domainInfos = dnsCache.getDomainServerIp(hostname);
+        List<InetAddress> inetAddresses = new ArrayList();
+        try {
+            DNSCache dnsCache = DNSCache.getInstance();
+            String ip = InetAddress.getByName(hostname).getHostAddress();
+            DomainInfo[] domainInfos = dnsCache.getDomainServerIp(hostname);
 
-        List<InetAddress> inetAddresses = new ArrayList<InetAddress>();
-        for (DomainInfo info : domainInfos) {
-            inetAddresses.addAll(Arrays.asList(InetAddress.getAllByName(info.url)));
+            for (DomainInfo info : domainInfos) {
+                inetAddresses.addAll(Arrays.asList(InetAddress.getAllByName(info.url)));
+            }
+        }catch (Exception e){
+
         }
-        return inetAddresses.size() > 0 ? inetAddresses : SYSTEM.lookup(hostname);
+        return inetAddresses;
     }
 
 }
